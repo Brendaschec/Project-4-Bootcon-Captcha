@@ -3,7 +3,7 @@
 #### Captcha Audio Generator
 
 #### Globals
-appver = "0.1"
-apptitle = "Captcha Audio Generator"
+appVer = "0.1"
+appTitle = "Captcha Audio Generator"
 
-print(f"{apptitle} Version {appver}")
+print(f"{appTitle} Version {appVer}")

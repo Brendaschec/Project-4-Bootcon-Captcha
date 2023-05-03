@@ -10,12 +10,12 @@ from wand.image import Image
 from wand.drawing import Drawing
 
 #### Globals
-appver = "0.1"
-apptitle = "Captcha Image Generator"
+appVer = "0.1"
+appTitle = "Captcha Image Generator"
 
 #### Start Here
 def main():
-  print(f"{apptitle} Version {appver}")
+  print(f"{appTitle} Version {appVer}")
   # Did the user pass valid arguments?
   # Let's *try* to parse them!
   numArgs = len(sys.argv)
