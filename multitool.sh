@@ -11,6 +11,8 @@ echo "1 - Update static web content"
 echo ""
 
 read -n1 optnumber
+echo -e "\n"
+
 case ${optnumber} in
   1)
     upcontent
