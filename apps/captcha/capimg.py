@@ -4,6 +4,7 @@
 
 #### Libraries
 import sys
+import random
 from wand.color import Color
 from wand.image import Image
 from wand.drawing import Drawing
@@ -46,9 +47,12 @@ def main():
 def showHelp():
   print(f"Usage: {sys.argv[0]} -s <YOURSTRING> -f <OUTPUTFILE>")
 
+#### Generate an Image with Distorted Text
 def CaptchaImage(capString):
   # Define a Blank PNG Image
-  imgCanvas = Image(width=320, height=82, background=Color('WHITE'))
+  imgWidth = 320
+  imgHeight = 82
+  imgCanvas = Image(width=imgWidth, height=imgHeight, background=Color('WHITE'))
   imgCanvas.format = 'png'
   
   # Define a Drawing Object for Painting Colored Text
@@ -56,7 +60,24 @@ def CaptchaImage(capString):
   drawTool.fill_color = Color("#1D0067");
   drawTool.font = 'Liberation-Serif'
   drawTool.font_size = 48
+  
+  # Paint the Text
   drawTool.text(40, 60, capString)
+  drawTool(imgCanvas);
+  
+  # Distort the Image with Transformation
+  rndSwirl1 = random.randint(26, 37)
+  imgCanvas.swirl(degree=rndSwirl1)
+  
+  # Define a Drawing Object for Painting Lines
+  drawTool = Drawing()
+  drawTool.fill_color = Color("RED");
+  
+  # Draw Some Random Lines on the Image
+  lines = 10
+  while lines > 0:
+    drawTool.line((random.randint(2, imgWidth - 100),random.randint(2, imgHeight - 60)), (random.randint(100, imgWidth - 10),random.randint(40, imgHeight - 10)))
+    lines = lines - 1
   drawTool(imgCanvas);
   
   return imgCanvas.make_blob();
