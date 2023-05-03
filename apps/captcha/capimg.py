@@ -4,6 +4,9 @@
 
 #### Libraries
 import sys
+from wand.color import Color
+from wand.image import Image
+from wand.drawing import Drawing
 
 #### Globals
 appver = "0.1"
@@ -33,15 +36,30 @@ def main():
       arg = arg + 1
     print(f"You want to use the string: {capString}")
     print(f"You want to save to: {outFile}")
+    capImage = CaptchaImage(capString)
+    newFile = open(outFile, "wb")
+    newFile.write(capImage)
+    newFile.close()
   else:
     showHelp()
 
 def showHelp():
   print(f"Usage: {sys.argv[0]} -s <YOURSTRING> -f <OUTPUTFILE>")
 
-def CaptchaImage(capString="ERROR"):
-  print("NOT IMPLEMENTED")
-  return finalimage
+def CaptchaImage(capString):
+  # Define a Blank PNG Image
+  imgCanvas = Image(width=320, height=82, background=Color('WHITE'))
+  imgCanvas.format = 'png'
+  
+  # Define a Drawing Object for Painting Colored Text
+  drawTool = Drawing()
+  drawTool.fill_color = Color("#1D0067");
+  drawTool.font = 'Liberation-Serif'
+  drawTool.font_size = 48
+  drawTool.text(40, 60, capString)
+  drawTool(imgCanvas);
+  
+  return imgCanvas.make_blob();
 
 #### Run as Standalone App or Module
 if __name__ == '__main__':
