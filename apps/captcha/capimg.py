@@ -57,7 +57,7 @@ def CaptchaImage(capString):
   
   # Define a Drawing Object for Painting Colored Text
   drawTool = Drawing()
-  drawTool.fill_color = Color("#1D0067");
+  drawTool.fill_color = Color(random.choice(['RED','ORANGE','GREEN','BLUE','BLACK']));
   drawTool.font = 'Liberation-Serif'
   drawTool.font_size = 48
   
@@ -71,11 +71,11 @@ def CaptchaImage(capString):
   
   # Define a Drawing Object for Painting Lines
   drawTool = Drawing()
-  drawTool.fill_color = Color("RED");
   
   # Draw Some Random Lines on the Image
   lines = 10
   while lines > 0:
+    drawTool.fill_color = Color(random.choice(['RED','MAGENTA','ORANGE','GREEN','BLUE','BROWN']));
     drawTool.line((random.randint(2, imgWidth - 100),random.randint(2, imgHeight - 60)), (random.randint(100, imgWidth - 10),random.randint(40, imgHeight - 10)))
     lines = lines - 1
   drawTool(imgCanvas);
@@ -86,3 +86,9 @@ def CaptchaImage(capString):
 if __name__ == '__main__':
   # Standalone Mode
   main()
+
+
+#### Resources and References
+# https://docs.python.org/3/library/random.html
+# https://www.geeksforgeeks.org/python-write-bytes-to-file/
+# https://www.digitalocean.com/community/tutorials/python-command-line-arguments
