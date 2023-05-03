@@ -2,6 +2,8 @@
 
 #### Captcha HTTP Server
 
-
+#### Globals
 appver = "0.1"
-print(f"Captcha Server Version {appver}")
+apptitle = "Captcha Server"
+
+print(f"{apptitle} Version {appver}")
