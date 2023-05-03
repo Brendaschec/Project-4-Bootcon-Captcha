@@ -1,5 +1,7 @@
 ## UPenn Cybersecurity Bootcamp Project 4
 
+Check out our [Scratchpad](scratchpad.md)!
+
 ### Overview:
 
 **Topic**: Web Development - CAPTCHA Challenge Authentication
