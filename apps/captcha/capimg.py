@@ -112,6 +112,7 @@ if __name__ == '__main__':
 #### Resources and References
 #https://stackoverflow.com/questions/26286203/custom-print-function-that-wraps-print
 #https://pynative.com/python-global-variables/
+#https://www.freecodecamp.org/news/python-print-exception-how-to-try-except-print-an-error/
 #https://docs.python.org/3/library/random.html
 #https://www.geeksforgeeks.org/python-write-bytes-to-file/
 #https://www.digitalocean.com/community/tutorials/python-command-line-arguments
