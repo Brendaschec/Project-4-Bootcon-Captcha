@@ -10,42 +10,63 @@ from wand.image import Image
 from wand.drawing import Drawing
 
 #### Globals
+# Somewhat Meaningless Version Info
 appVer = "0.1"
 appTitle = "Captcha Image Generator"
+# Modes
+verboseMode = False
 
 #### Start Here
 def main():
   print(f"{appTitle} Version {appVer}")
-  # Did the user pass valid arguments?
-  # Let's *try* to parse them!
+  # Defaults that really need to be overridden
+  capString = None
+  outFile = None
+  # Try to parse arguments
   numArgs = len(sys.argv)
-  if numArgs != 1 and (numArgs - 1) % 2 == 0:
-    arg = 1
-    capString = None
-    outFile = None
-    while arg < numArgs:
-      # There is no match case until Python 3.10. Sorry!
-      if sys.argv[arg] == "-s": # Get string for captcha
-        arg = arg + 1
-        capString = sys.argv[arg]
-      elif sys.argv[arg] == "-f": # Get file name
-        arg = arg + 1
-        outFile = sys.argv[arg]
-      elif sys.argv[arg] == "-t": # Test arg parser
-        arg = arg + 1
-        print("Test Pass!")
-      arg = arg + 1
-    print(f"You want to use the string: {capString}")
-    print(f"You want to save to: {outFile}")
+  if numArgs != 1:
+    try:
+      i = 1
+      while i < numArgs:
+        if sys.argv[i][0] == '-':
+          if sys.argv[i][1] == 'v': # Enable verbose mode
+            global verboseMode
+            verboseMode = True
+          elif sys.argv[i][1] == 'h': # Show Help Page
+            showHelp()
+          elif sys.argv[i][1] == 's': # Get string for captcha
+            i = i + 1
+            capString = sys.argv[i]
+          elif sys.argv[i][1] == 'f': # Get file name
+            i = i + 1
+            outFile = sys.argv[i]
+          elif sys.argv[i][1] == 't': # Test arg prints string
+            i = i + 1
+            print(sys.argv[i])
+        i = i + 1
+    except Exception as error:
+      print(f"Error parsing arguments! Pass \'-h\' for help.\nExiting.")
+      vprint(error)
+  else:
+    showHelp()
+  if capString is not None and outFile is not None:
+    vprint(f"You want to use the string: {capString}")
+    vprint(f"You want to save to: {outFile}")
     capImage = CaptchaImage(capString)
     newFile = open(outFile, "wb")
     newFile.write(capImage)
     newFile.close()
   else:
-    showHelp()
+    print('File Error')
 
 def showHelp():
   print(f"Usage: {sys.argv[0]} -s <YOURSTRING> -f <OUTPUTFILE>")
+  exit(0)
+  
+def vprint(*args, **kwargs):
+  if verboseMode == True:
+    print("[VERBOSE] -- ", end = '')
+    print(*args, **kwargs)
 
 #### Generate an Image with Distorted Text
 def CaptchaImage(capString):
@@ -89,6 +110,8 @@ if __name__ == '__main__':
 
 
 #### Resources and References
-# https://docs.python.org/3/library/random.html
-# https://www.geeksforgeeks.org/python-write-bytes-to-file/
-# https://www.digitalocean.com/community/tutorials/python-command-line-arguments
+#https://stackoverflow.com/questions/26286203/custom-print-function-that-wraps-print
+#https://pynative.com/python-global-variables/
+#https://docs.python.org/3/library/random.html
+#https://www.geeksforgeeks.org/python-write-bytes-to-file/
+#https://www.digitalocean.com/community/tutorials/python-command-line-arguments
