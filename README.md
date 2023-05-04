@@ -28,4 +28,6 @@ The Linux VM hosts the NGINX HTTP server to serve static HTML/CSS/JS content for
 
 
 ### To Do:
-
+ - Get sound option working
+ - Create realistic demo like a survey, poll, username/password form to protect
+ - Stability testing
