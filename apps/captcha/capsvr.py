@@ -5,7 +5,8 @@
 #### Libraries
 import sys
 from capimg import CaptchaImage
-
+from capsnd import CaptchaSound
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 #### Globals
 # Somewhat Meaningless Version Info
@@ -17,6 +18,45 @@ verboseMode = False
 hostName = "localhost"
 portNum = 8080
 
+#### Handling HTTP Requests
+# Define a custom class that uses BaseHTTPRequestHandler
+class myServer(BaseHTTPRequestHandler):
+# Overriding methods from the default ones in BaseHTTPRequestHandler.
+  try:
+    def do_GET(self):
+      if self.path == '/new_image': # When to gen images
+        challenge = newImage(self)
+        self.wfile.write(challenge)
+      elif self.path == '/new_sound': # When to gen sounds
+        challenge = newSound(self)
+        self.wfile.write(challenge)
+      elif self.path == '/debug': # Test page
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(bytes("This is a test page.", "utf-8"))
+      else:
+        self.send_error(404)
+  except Exception as error:
+    print("Internal Server Error! Check using verbose mode!")
+    vprint(error)
+
+#### Generate Image Challenge
+def newImage(self):
+  # We need to gen and store a random cookie and challenge answer
+  self.send_response(200)
+  self.send_header("Content-type", "image/png")
+  self.end_headers()
+  return CaptchaImage("Hello World")
+
+#### Generate Sound Challenge (piggyback off existing img answer)
+def newSound(self):
+  self.send_response(200)
+  #self.send_header("Content-type", "audio/wav")
+  self.send_header("Content-type", "text/html")
+  self.end_headers()
+  # We need to check the cookies to send same random string as audio
+  return bytes("Not Implemented!", "utf-8")
 
 #### Start Here
 def main():
@@ -40,7 +80,14 @@ def main():
     except Exception as error:
       print(f"Error parsing arguments! Pass \'-h\' for help.\nExiting.")
       vprint(error)
-  print("Placeholder")
+  httpd = HTTPServer((hostName, portNum), myServer)
+  print(f"Server started and listening on port {portNum}")
+  try:
+    httpd.serve_forever()
+  except KeyboardInterrupt:
+    pass
+  httpd.server_close()
+  print("Server stopped.")
 
 def showHelp():
   print(f"Usage: {sys.argv[0]} [OPTIONS]")
@@ -61,3 +108,4 @@ if __name__ == '__main__':
 #https://stackoverflow.com/questions/26286203/custom-print-function-that-wraps-print
 #https://pynative.com/python-global-variables/
 #https://www.freecodecamp.org/news/python-print-exception-how-to-try-except-print-an-error/
+#https://pythonbasics.org/webserver/
