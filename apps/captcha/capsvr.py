@@ -6,6 +6,7 @@
 import sys
 import time
 import random
+import threading
 from capimg import CaptchaImage
 from capsnd import CaptchaSound
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -19,7 +20,7 @@ verboseMode = False
 # Network Settings
 hostName = "localhost"
 portNum = 8080
-# Random Character Choice Dataset
+# Random Character Choice Dataset (Notice there is no zero)
 charChoices = "987654321ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 # Session Record (Stores challenge answer, cookie info, timestamp, etc)
 sessionRecord = {}
@@ -43,6 +44,7 @@ class myServer(BaseHTTPRequestHandler):
     def do_POST(self):
       if self.path == '/validate':
         response = valResponse(self)
+        self.end_headers()
         self.wfile.write(bytes(response,"utf-8"))
   except Exception as error:
     print("Internal Server Error! Check using verbose mode!")
@@ -50,12 +52,10 @@ class myServer(BaseHTTPRequestHandler):
 
 #### Generate Image Challenge
 def newImage(self):
-  # Clear Old Items from Session Record
-  clrOldSessions()
   # 24-Character Random Cookie
   randCookie = ''.join(random.choice(charChoices) for i in range(24))
   # Format Cookie String for Browser
-  fmtCookie = 'captchaid='+randCookie
+  fmtCookie = 'captchaID='+randCookie
   self.send_response(200)
   # HTTP Headers
   self.send_header("Content-type", "image/png")
@@ -84,25 +84,32 @@ def newSound(self):
 
 #### Validate Client Response
 def valResponse(self):
-  # I might need to redesign this so we can return a long term cookie!
   self.send_response(200)
   self.send_header("Content-type", "text/html")
-  self.end_headers()
-  if self.headers['Content-Length'] is not None and 'Cookie' in self.headers and '=' in self.headers['Cookie']:
-    # Don't send garbage to my server!
-    try:
-      contentLength = int(self.headers['Content-Length'])
-    except:
-      contentLength = None
-    captchaID = self.headers['Cookie'].split('=')[1]
+  # Kinda make sure client is honest about content length header
+  try:
+    contentLength = int(self.headers['Content-Length'])
+  except:
+    contentLength = None
+  if self.headers['Content-Length'] is not None \
+  and 'Cookie' in self.headers \
+  and 'captchaID=' in self.headers['Cookie']:
+    # This is messy but we really just care about the captchaID cookie
+    captchaID = self.headers['Cookie'].partition('captchaID=')[2]
+    if '; ' in self.headers['Cookie']:
+      captchaID = captchaID.split('; ')[0]
+    vprint(f"Client cookies: {self.headers['Cookie']}")
+    vprint(f"Client captchaID: {captchaID}")
     postBody = self.rfile.read(contentLength).decode() # Is this good?
-    vprint(f"POSTed Message Body: {postBody}")
-    if '=' in postBody:
-      userAnswer = postBody.split('=')[1]
+    vprint(f"POSTed Message Body: {postBody}") # What if client lies???
+    if 'captchaAnswer=' in postBody:
+      # We only expect an answer and nothing else
+      userAnswer = postBody.partition('captchaAnswer=')[2]
+      vprint(f"Client userAnswer: {userAnswer}")
     else:
       return "Bad POST Body!\n"
     if captchaID in sessionRecord:
-      if userAnswer == sessionRecord[captchaID][0]: # Is the answer right?
+      if userAnswer == sessionRecord[captchaID][0]: # Is answer right?
         return "Correct!\n"
       else:
         return "Wrong!\n"
@@ -136,6 +143,17 @@ def clrOldSessions():
   for key in oldSessions:
     del sessionRecord[key]
 
+#### Periodically run clrOldSessions() with threading
+def sessionHouseKeeping(interval):
+  # Used copyprogramming.com for help with this
+  # Create a timer object
+  timer = threading.Timer(interval, sessionHouseKeeping, args=[interval])
+  # Set the timer as a daemon thread we can exit without waiting for it
+  timer.daemon = True
+  timer.start()
+  # Clear Old Items from Session Record
+  clrOldSessions()
+
 #### Start Here
 def main():
   print(f"{appTitle} Version {appVer}")
@@ -160,6 +178,7 @@ def main():
       vprint(error)
   httpd = HTTPServer((hostName, portNum), myServer)
   print(f"Server started and listening on port {portNum}")
+  sessionHouseKeeping(20) # Clean up old sessionRecords every 20 seconds
   try:
     httpd.serve_forever()
   except KeyboardInterrupt:
@@ -185,6 +204,8 @@ if __name__ == '__main__':
   # Standalone Mode
   main()
 
+
+#### Resources and References
 #https://stackoverflow.com/questions/26286203/custom-print-function-that-wraps-print
 #https://pynative.com/python-global-variables/
 #https://www.freecodecamp.org/news/python-print-exception-how-to-try-except-print-an-error/
@@ -192,3 +213,5 @@ if __name__ == '__main__':
 #https://www.educative.io/answers/how-to-generate-a-random-string-in-python
 #https://www.programiz.com/python-programming/dictionary
 #https://www.w3schools.com/python/python_lists.asp
+#https://copyprogramming.com/howto/how-to-run-a-function-every-30-seconds-in-python-best-methods-and-code-examples
+#https://stackoverflow.com/questions/12572362/how-to-get-a-string-after-a-specific-substring
