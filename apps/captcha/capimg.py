@@ -78,9 +78,20 @@ def CaptchaImage(capString):
   imgCanvas = Image(width=imgWidth, height=imgHeight, background=Color('WHITE'))
   imgCanvas.format = 'png'
   
+  # Define a Drawing Object for Painting Lines
+  drawTool = Drawing()
+  
+  # Draw many Random Gray Lines on the Image
+  lines = 100
+  while lines > 0:
+    drawTool.fill_color = Color(random.choice(['#DADADA','#FFACFF','#B8B8B8','#FEFF9F']));
+    drawTool.line((random.randint(2, imgWidth - 100),random.randint(2, imgHeight - 60)), (random.randint(100, imgWidth - 10),random.randint(40, imgHeight - 10)))
+    lines = lines - 1
+  drawTool(imgCanvas);
+  
   # Define a Drawing Object for Painting Colored Text
   drawTool = Drawing()
-  drawTool.fill_color = Color(random.choice(['RED','GREEN','BLUE','BLACK']));
+  drawTool.fill_color = Color('BLACK');
   drawTool.font = 'Liberation-Serif'
   drawTool.font_size = 48
   
@@ -95,8 +106,8 @@ def CaptchaImage(capString):
   # Define a Drawing Object for Painting Lines
   drawTool = Drawing()
   
-  # Draw Some Random Lines on the Image
-  lines = 15
+  # Draw some Random Colored Lines on the Image
+  lines = 16
   while lines > 0:
     drawTool.fill_color = Color(random.choice(['RED','MAGENTA','ORANGE','GREEN','BLUE','BROWN']));
     drawTool.line((random.randint(2, imgWidth - 100),random.randint(2, imgHeight - 60)), (random.randint(100, imgWidth - 10),random.randint(40, imgHeight - 10)))
