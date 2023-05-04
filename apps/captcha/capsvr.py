@@ -76,11 +76,20 @@ def newImage(self):
 #### Generate Sound Challenge (piggyback off existing img answer)
 def newSound(self):
   self.send_response(200)
-  #self.send_header("Content-type", "audio/wav")
-  self.send_header("Content-type", "text/html")
+  self.send_header("Content-type", "audio/wav")
   self.end_headers()
   # We need to check the cookies to send same random string as audio
-  return bytes("Not Implemented!", "utf-8")
+  if 'Cookie' in self.headers and 'captchaID=' in self.headers['Cookie']:
+    # This is almost a copy of what was in valResponse
+    captchaID = self.headers['Cookie'].partition('captchaID=')[2]
+    if '; ' in self.headers['Cookie']:
+      captchaID = captchaID.split('; ')[0]
+    vprint(f"Client captchaID: {captchaID}")
+    challengeAnswer = '...'.join(sessionRecord[captchaID][0])
+    return CaptchaSound(challengeAnswer)
+  else:
+    return CaptchaSound("Improper Headers and/or Cookies!")
+  
 
 #### Validate Client Response
 def valResponse(self):
