@@ -1,3 +1,56 @@
-<HTML>
-<H1>Test Page!</H1>
-</HTML>
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Are you a robot?</h2>
+<p><b>Complete the verification challenge!</b></p>
+<p>
+  &nbsp;- You have one minute to solve.
+  <br>
+  &nbsp;- Input only capital letters and digits (except zero).
+</p>
+<br>
+<div>
+  <img src="/apps/captcha/new_image" alt="Image failed to load.">
+  <br>
+  <div id="soundDiv"></div>
+  <br>
+  <label for="answerBox">Type the text you recognize:</label><br><br>
+  <input type="text" id="answerBox" name="capans">
+  <button autocomplete="false" id="submitButton">Submit</button>
+  <br><br>
+  <a href="javascript:void(0);" onclick="playSound();" id="requestSound">Request a Sound-Based Challenge</a>
+</div>
+<br>
+<div id="responseDiv"></div>
+<script>
+  const answerBox = document.getElementById("answerBox");
+  const submitButton = document.getElementById("submitButton");
+  const responseDiv = document.getElementById("responseDiv");
+  const soundDiv = document.getElementById("soundDiv");
+  
+  function playSound() {
+    soundDiv.innerHTML = "<audio controls=\"controls\"><source src=\"test.wav\" type=\"audio/x-wav\" /></audio>"
+  }
+  
+  submitButton.addEventListener('click', async () => {
+    const response = await fetch('/apps/captcha/validate', {  
+      method: 'POST',
+      body: `captchaAnswer=${answerBox.value}`,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+    const responseData = await response.text();
+    responseDiv.textContent = responseData;
+    answerBox.value = ''; // Clear the input textbox
+  });
+</script>
+</body>
+</html>
+
+
+<!-- Resources and References -->
+<!-- https://www.w3schools.com/tags/att_form_method.asp -->
+<!-- https://gist.github.com/niksumeiko/360164708c3b326bd1c8 -->
+<!-- https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit -->
+<!-- https://developer.mozilla.org/en-US/docs/Learn/Forms/Sending_forms_through_JavaScript -->
+<!-- https://tecadmin.net/call-javascript-function-on-click-events/ -->
+<!-- https://stackoverflow.com/questions/1175448/best-way-to-play-wav-files-in-the-browser -->
