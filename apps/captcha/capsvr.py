@@ -84,6 +84,7 @@ def newSound(self):
   self.send_response(200)
   self.send_header("Content-type", "audio/wav")
   self.end_headers()
+  capSound = bytes('','utf-8')
   # We need to check the cookies to send same random string as audio
   if 'Cookie' in self.headers and 'captchaID=' in self.headers['Cookie']:
     # This is almost a copy of what was in valResponse
@@ -91,10 +92,10 @@ def newSound(self):
     if '; ' in self.headers['Cookie']:
       captchaID = captchaID.split('; ')[0]
     vprint(f"Client captchaID: {captchaID}")
-    challengeAnswer = '...'.join(sessionRecord[captchaID][0])
-    return CaptchaSound(challengeAnswer)
-  else:
-    return CaptchaSound("Improper Headers and/or Cookies!")
+    if captchaID in sessionRecord:
+      challengeAnswer = '...'.join(sessionRecord[captchaID][0])
+      capSound = CaptchaSound(challengeAnswer)
+    return capSound
   
 
 #### Validate Client Response
