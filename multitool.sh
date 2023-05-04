@@ -1,9 +1,10 @@
 #!/bin/bash
 
+# Work relative to script dir
 cd $(dirname ${0})
 
 function upcontent {
-  sudo rsync -vr ./html/* /usr/share/nginx/html/
+  sudo rsync -vr ./demo/* /usr/share/nginx/html/
 }
 
 echo "What do you want to do? (Enter a number)"
