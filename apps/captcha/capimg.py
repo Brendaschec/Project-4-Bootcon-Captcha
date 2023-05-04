@@ -59,10 +59,12 @@ def main():
   else:
     print('File Error')
 
+#### Help Page
 def showHelp():
   print(f"Usage: {sys.argv[0]} -s <YOURSTRING> -f <OUTPUTFILE>")
   exit(0)
-  
+
+#### Verbose Mode Printing
 def vprint(*args, **kwargs):
   if verboseMode == True:
     print("[VERBOSE] -- ", end = '')

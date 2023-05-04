@@ -37,9 +37,13 @@ class myServer(BaseHTTPRequestHandler):
         challenge = newSound(self)
         self.wfile.write(challenge)
       elif self.path == '/debug': # Test page
-        genericResponse(self,"This is a test page.")
+        genericHTTPResponse(self,"This is a test page.")
       else:
         self.send_error(404)
+    def do_POST(self):
+      if self.path == '/validate':
+        response = valResponse(self)
+        self.wfile.write(bytes(response,"utf-8"))
   except Exception as error:
     print("Internal Server Error! Check using verbose mode!")
     vprint(error)
@@ -64,7 +68,7 @@ def newImage(self):
   sessionRecord[randCookie] = [randAnswer,currentTime]
   # Show Session Table For Debugging
   if verboseMode == True:
-    vprint(f"SESSIONS                    ANSWERS    TIMESTAMP")
+    vprint(f"SESSIONS                     ANSWERS   TIMESTAMP")
     for key, values in sessionRecord.items():
       vprint(f"{key}\t{values}")
   return CaptchaImage(randAnswer)
@@ -78,14 +82,51 @@ def newSound(self):
   # We need to check the cookies to send same random string as audio
   return bytes("Not Implemented!", "utf-8")
 
+#### Validate Client Response
+def valResponse(self):
+  # I might need to redesign this so we can return a long term cookie!
+  self.send_response(200)
+  self.send_header("Content-type", "text/html")
+  self.end_headers()
+  if self.headers['Content-Length'] is not None and 'Cookie' in self.headers and '=' in self.headers['Cookie']:
+    # Don't send garbage to my server!
+    try:
+      contentLength = int(self.headers['Content-Length'])
+    except:
+      contentLength = None
+    captchaID = self.headers['Cookie'].split('=')[1]
+    postBody = self.rfile.read(contentLength).decode() # Is this good?
+    vprint(f"POSTed Message Body: {postBody}")
+    if '=' in postBody:
+      userAnswer = postBody.split('=')[1]
+    else:
+      return "Bad POST Body!\n"
+    if captchaID in sessionRecord:
+      if userAnswer == sessionRecord[captchaID][0]: # Is the answer right?
+        return "Correct!\n"
+      else:
+        return "Wrong!\n"
+    else:
+      return "Invalid Session!\n"
+  else:
+    return "Improper Headers and/or Cookies!\n"
+  
+
 #### Generic HTTP Response
-def genericResponse(self,msg):
+def genericHTTPResponse(self,msg):
   self.send_response(200)
   self.send_header("Content-type", "text/html")
   self.end_headers()
   self.wfile.write(bytes(msg, "utf-8"))
 
-#### Remove expired sessions from sessionRecord
+#### Generic HTTP Error
+def genericHTTPError(self,msg):
+  self.send_response(403)
+  self.send_header("Content-type", "text/html")
+  self.end_headers()
+  self.wfile.write(bytes(msg, "utf-8"))
+
+#### Clear Expired Sessions from sessionRecord
 def clrOldSessions():
   currentTime = int(time.time())
   oldSessions = []
@@ -126,12 +167,14 @@ def main():
   httpd.server_close()
   print("Server stopped.")
 
+#### Help Page
 def showHelp():
   print(f"Usage: {sys.argv[0]} [OPTIONS]")
   print(f"\t-h : Show Help")
   print(f"\t-v : Enable Verbose Mode")
   exit(0)
 
+#### Verbose Mode Printing
 def vprint(*args, **kwargs):
   if verboseMode == True:
     print("[VERBOSE] -- ", end = '')
@@ -147,5 +190,5 @@ if __name__ == '__main__':
 #https://www.freecodecamp.org/news/python-print-exception-how-to-try-except-print-an-error/
 #https://pythonbasics.org/webserver/
 #https://www.educative.io/answers/how-to-generate-a-random-string-in-python
-# https://www.programiz.com/python-programming/dictionary
-# https://www.w3schools.com/python/python_lists.asp
+#https://www.programiz.com/python-programming/dictionary
+#https://www.w3schools.com/python/python_lists.asp
