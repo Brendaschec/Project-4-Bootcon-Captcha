@@ -21,7 +21,7 @@ def main():
   print(f"{appTitle} Version {appVer}")
   # Defaults that really need to be overridden
   capString = None
-  outFile = None
+  outFile = "temp.png"
   # Try to parse arguments
   numArgs = len(sys.argv)
   if numArgs != 1:
@@ -49,7 +49,7 @@ def main():
       vprint(error)
   else:
     showHelp()
-  if capString is not None and outFile is not None:
+  if capString is not None:
     vprint(f"You want to use the string: {capString}")
     vprint(f"You want to save to: {outFile}")
     capImage = CaptchaImage(capString)
@@ -78,7 +78,7 @@ def CaptchaImage(capString):
   
   # Define a Drawing Object for Painting Colored Text
   drawTool = Drawing()
-  drawTool.fill_color = Color(random.choice(['RED','ORANGE','GREEN','BLUE','BLACK']));
+  drawTool.fill_color = Color(random.choice(['RED','GREEN','BLUE','BLACK']));
   drawTool.font = 'Liberation-Serif'
   drawTool.font_size = 48
   
@@ -94,7 +94,7 @@ def CaptchaImage(capString):
   drawTool = Drawing()
   
   # Draw Some Random Lines on the Image
-  lines = 10
+  lines = 15
   while lines > 0:
     drawTool.fill_color = Color(random.choice(['RED','MAGENTA','ORANGE','GREEN','BLUE','BROWN']));
     drawTool.line((random.randint(2, imgWidth - 100),random.randint(2, imgHeight - 60)), (random.randint(100, imgWidth - 10),random.randint(40, imgHeight - 10)))
