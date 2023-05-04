@@ -3,6 +3,7 @@
 #### Captcha HTTP Server
 
 #### Libraries
+import re
 import sys
 import time
 import random
@@ -31,10 +32,15 @@ class myServer(BaseHTTPRequestHandler):
 # Overriding methods from the default ones in BaseHTTPRequestHandler.
   try:
     def do_GET(self):
-      if self.path == '/new_image': # When to gen images
+      if self.path == '/new_image': # gen images
         challenge = newImage(self)
         self.wfile.write(challenge)
-      elif self.path == '/new_sound': # When to gen sounds
+      elif re.match(r'^/new_sound/(\d+)$', self.path): # gen sounds
+        # Why the regex? - We need to match random digits in the URL
+        # Why again?? - Firefox caches the sound file too agressively!
+        # And...? - This workaround forces it to fetch a new URL.
+        # Heres a new problem. Chrome users can spam the server by
+        #   clicking the link many times. We need to alteast hide it!
         challenge = newSound(self)
         self.wfile.write(challenge)
       elif self.path == '/debug': # Test page
