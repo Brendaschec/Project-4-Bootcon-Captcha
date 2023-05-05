@@ -35,7 +35,7 @@ class myServer(BaseHTTPRequestHandler):
       if self.path == '/new_image': # gen images
         challenge = newImage(self)
         self.wfile.write(challenge)
-      elif re.match(r'^/new_sound/(\d+)$', self.path): # gen sounds
+      elif re.match(r'^/new_sound/(\d+).(wav|mp3)$', self.path): # gen sounds
         # Why the regex? - We need to match random digits in the URL
         # Why again?? - Firefox caches the sound file too agressively!
         # And...? - This workaround forces it to fetch a new URL.
@@ -82,7 +82,12 @@ def newImage(self):
 #### Generate Sound Challenge (piggyback off existing img answer)
 def newSound(self):
   self.send_response(200)
-  self.send_header("Content-type", "audio/wav")
+  fileFmt = 0 # zero means wav, 1 means covert to mp3
+  if '.mp3' in self.path:
+    fileFmt = 1
+    self.send_header("Content-type", "audio/mp3")
+  else:
+    self.send_header("Content-type", "audio/wav")
   self.end_headers()
   capSound = bytes('','utf-8')
   # We need to check the cookies to send same random string as audio
@@ -94,8 +99,8 @@ def newSound(self):
     vprint(f"Client captchaID: {captchaID}")
     if captchaID in sessionRecord:
       challengeAnswer = '...'.join(sessionRecord[captchaID][0])
-      capSound = CaptchaSound(challengeAnswer)
-    return capSound
+      capSound = CaptchaSound(challengeAnswer, fileFmt)
+  return capSound
   
 
 #### Validate Client Response

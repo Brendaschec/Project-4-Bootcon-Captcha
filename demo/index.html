@@ -27,13 +27,6 @@
   const submitButton = document.getElementById("submitButton");
   const responseDiv = document.getElementById("responseDiv");
   const soundDiv = document.getElementById("soundDiv");
-  // Firefox agressively caches the audio even when the document reloads
-  // We load a random URL under /new_sound/ to trick it into not caching
-  const randCacheWorkaround = Math.floor(Math.random() * 100);
-  
-  function playSound() {
-    soundDiv.innerHTML = `<audio controls="controls"><source src="/apps/captcha/new_sound/${randCacheWorkaround}" type="audio/x-wav" /></audio>`
-  }
   
   submitButton.addEventListener('click', async () => {
     const response = await fetch('/apps/captcha/validate', {  
@@ -45,6 +38,21 @@
     responseDiv.textContent = responseData;
     answerBox.value = ''; // Clear the input textbox
   });
+  
+  // Firefox agressively caches the audio even when the document reloads
+  // We load a random URL under /new_sound/ to trick it into not caching
+  const randCacheWorkaround = Math.floor(Math.random() * 100);
+  // We need to send an mp3 file if the device is iOS based. WAV stream doesn't work! Credit: natclark.com
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  // Why not always send an mp3? -> Conversion is slower and uses more cpu.
+  // Congrats! Now you know a weak point in my app!
+  function playSound() {
+    if (isIOS == true) {
+      soundDiv.innerHTML = `<audio controls="controls"><source src="/apps/captcha/new_sound/${randCacheWorkaround}.mp3" type="audio/mp3" /></audio>`
+    } else {
+      soundDiv.innerHTML = `<audio controls="controls"><source src="/apps/captcha/new_sound/${randCacheWorkaround}.wav" type="audio/wav" /></audio>`
+    }
+  }
 </script>
 </body>
 </html>
@@ -59,3 +67,4 @@
 <!-- https://stackoverflow.com/questions/1175448/best-way-to-play-wav-files-in-the-browser -->
 <!-- https://www.w3schools.com/js/js_cookies.asp -->
 <!-- https://www.w3schools.com/js/js_random.asp -->
+<!-- https://natclark.com/tutorials/javascript-ios-device/ -->
