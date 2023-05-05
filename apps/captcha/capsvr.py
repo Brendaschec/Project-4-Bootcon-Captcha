@@ -89,7 +89,8 @@ def newSound(self):
   else:
     self.send_header("Content-type", "audio/wav")
   self.end_headers()
-  capSound = bytes('','utf-8')
+  #capSound = bytes('','utf-8')
+  capSound = CaptchaSound("Session Expired!", 0)
   # We need to check the cookies to send same random string as audio
   if 'Cookie' in self.headers and 'captchaID=' in self.headers['Cookie']:
     # This is almost a copy of what was in valResponse

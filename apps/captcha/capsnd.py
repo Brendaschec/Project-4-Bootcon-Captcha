@@ -66,7 +66,7 @@ def main():
 
 #### Help Page
 def showHelp():
-  print(f"Usage: {sys.argv[0]} -s <YOURSTRING> -f <OUTPUTFILE>")
+  print(f"Usage: {sys.argv[0]} [-m (Enable MP3)] -s <YOURSTRING> -f <OUTPUTFILE>")
   exit(0)
 
 #### Verbose Mode Printing
