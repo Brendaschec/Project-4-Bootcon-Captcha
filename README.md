@@ -18,7 +18,8 @@ Check out our [Scratchpad](scratchpad.md)!
  - HTML and CSS
  - JavaScript
  - ImageMagick
- - espeak
+ - espeak (espeak-ng)
+ - ffmpeg (ffmpeg-free)
  - cURL
  - Web Browser
  - Git/GitHub
