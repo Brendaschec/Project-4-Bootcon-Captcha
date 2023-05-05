@@ -47,11 +47,11 @@
   // Why not always send an mp3? -> Conversion is slower and uses more cpu.
   // Congrats! Now you know a weak point in my app!
   function playSound() {
+    fileExt = '.wav'
     if (isIOS == true) {
-      soundDiv.innerHTML = `<audio controls="controls"><source src="/apps/captcha/new_sound/${randCacheWorkaround}.mp3" type="audio/mp3" /></audio>`
-    } else {
-      soundDiv.innerHTML = `<audio controls="controls"><source src="/apps/captcha/new_sound/${randCacheWorkaround}.wav" type="audio/wav" /></audio>`
+      fileExt = '.mp3'
     }
+    soundDiv.innerHTML = `<audio controls="controls"><source src="/apps/captcha/new_sound/${randCacheWorkaround}${fileExt}" type="audio/mp3" /></audio>`
   }
 </script>
 </body>
