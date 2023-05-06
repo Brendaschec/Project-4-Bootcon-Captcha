@@ -3,9 +3,9 @@
 ### Step 1:
 Install the required packages:
 
-**Fedora/RHEL Distros:**
+**Fedora/RHEL9 Distros with EPEL:**
 
-`yum install ImageMagick ImageMagick-devel espeak-ng python3-pip mariadb mariadb-server mariadb-devel nginx`
+`yum install ImageMagick ImageMagick-devel espeak-ng python3-pip mariadb mariadb-server mariadb-devel nginx ffmpeg-free`
 
 **Debian/Ubuntu Distros:**
 
