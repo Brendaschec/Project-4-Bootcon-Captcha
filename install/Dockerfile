@@ -15,8 +15,8 @@ RUN microdnf install -y python3 python3-pip ImageMagick-devel espeak-ng ffmpeg-f
 RUN pip install Wand
 
 # Copy needed files
-COPY init.sh /init
-COPY setup.sh /setup
+COPY container_scripts/init.sh /init
+COPY container_scripts/setup.sh /setup
 
 # Entrypoint
 CMD /init
