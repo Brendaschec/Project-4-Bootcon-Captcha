@@ -44,7 +44,7 @@ sleep 5
 # Run some Management and SQL Queries
 dbName="survey"
 tableName="results"
-/usr/bin/mariadb -uroot -ptestpass100 <<EOF
+/usr/bin/mariadb -uroot -p${dbPassword} <<EOF
 GRANT ALL PRIVILEGES ON ${dbName}.* TO 'root'@'localhost' IDENTIFIED BY '${dbPassword}';
 FLUSH PRIVILEGES;
 CREATE DATABASE ${dbName};
