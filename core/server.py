@@ -128,7 +128,11 @@ def valResponse(self):
       captchaID = captchaID.split('; ')[0]
     vprint(f"Client cookies: {self.headers['Cookie']}")
     vprint(f"Client captchaID: {captchaID}")
-    postBody = self.rfile.read(contentLength).decode() # Is this good?
+    try:
+      postBody = self.rfile.read(contentLength).decode() # Is this good?
+    except:
+      vprint("Error reading POST Body")
+      return "Error reading request.\n"
     vprint(f"POSTed Message Body: {postBody}") # What if client lies???
     if 'captchaAnswer=' in postBody:
       # We only expect an answer and nothing else
