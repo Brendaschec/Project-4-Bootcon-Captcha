@@ -24,8 +24,8 @@ verboseMode = False
 # Network Settings
 hostName = "localhost"
 portNum = 8080
-# Sample Data for Random Choice (Notice there is no zero!)
-charChoices = "987654321ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+# Sample Data for Random Choice (Notice there is no zero or letter O!)
+charChoices = "987654321ABCDEFGHIJKLMNPQRSTUVWXYZ123456789"
 # Session Record (Stores challenge answer, cookie info, timestamp, etc)
 sessionRecord = {}
 
@@ -138,8 +138,10 @@ def valResponse(self):
       return "Bad POST Body!\n"
     if captchaID in sessionRecord:
       if userAnswer == sessionRecord[captchaID][0]: # Is answer right?
+        del sessionRecord[captchaID]
         return "Correct!\n"
       else:
+        del sessionRecord[captchaID]
         return "Wrong!\n"
     else:
       return "Invalid Session!\n"

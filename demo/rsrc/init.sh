@@ -6,12 +6,12 @@
 
 
 #### Oneshot Services
-#/setup
+# < none >
 
 
 #### Background Services
 services=(
-  'MYSQL_ROOT_PASSWORD=1234 /usr/bin/mariadbd-safe --user=root --bind-address=127.0.0.1'
+  '/usr/bin/mariadbd-safe --user=root --bind-address=127.0.0.1 --init-file=/etc/mariadb-init'
   '/usr/sbin/php-fpm --nodaemonize'
   '/usr/sbin/nginx -g "daemon off;"'
   '/captcha/server.py -v'

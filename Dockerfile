@@ -16,27 +16,19 @@ RUN microdnf install -y epel-release
 
 
 #### Install core packages
-RUN microdnf install -y python3 python3-pip ImageMagick-devel espeak-ng ffmpeg-free mariadb mariadb-server mariadb-devel nginx php liberation-fonts procps-ng vim
+RUN microdnf install -y python3 python3-pip ImageMagick-devel espeak-ng ffmpeg-free mariadb mariadb-server mariadb-devel nginx php php-mysqlnd liberation-fonts procps-ng vim
 RUN microdnf clean all
 RUN pip install Wand
 
 
-#### Copy/Create needed files/directories
-COPY init.sh /init
+#### Copy needed files and directories
+COPY demo/rsrc/setup.sh /setup
+COPY demo/rsrc/init.sh /init
 COPY core /captcha
 
 
-#### NGINX Arrangements
-RUN rm -r /usr/share/nginx/html/*
-COPY nxdefs.conf /etc/nginx/default.d/
-
-
-#### PHP Arrangements
-RUN mkdir -p /run/php-fpm
-
-
-#### MariaDB Arrangements
-RUN /usr/bin/mariadb-install-db --user=root --datadir=/var/lib/mysql
+#### Execute setup script
+RUN /setup
 
 
 #### Expose Ports for Web App
