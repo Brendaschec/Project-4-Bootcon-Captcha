@@ -1,35 +1,37 @@
 <!DOCTYPE html>
 <html>
 <body>
-<h2>Are you a robot?</h2>
+<h1><I>Are you a robot?</I></h1>
+<hr>
 <p><b>Complete the verification challenge!</b></p>
 <p>
   &nbsp;- You have one minute to solve.
   <br>
-  &nbsp;- Input only capital letters and digits (except zero).
+  &nbsp;- Input only capital letters and digits.
 </p>
 <div>
-  <img src="/apps/captcha/new_image" alt="Image failed to load.">
+  <img src="/apps/direct/new_image" alt="Image failed to load.">
   <br>
   <label for="answerBox">Type the text you recognize:</label><br><br>
-  <input autocomplete="false" type="text" id="answerBox" name="capans">
+  <input autocomplete="false" type="text" id="answerBox" name="captchaAnswer">
   <button id="submitButton">Submit</button>
   <br>
   <br>
-  <div id="soundDiv">
-    <a href="javascript:void(0);" onclick="playSound();" id="requestSound">Request a Sound-Based Challenge</a>
+  <div id="audioDiv">
+    <a href="javascript:void(0);" onclick="playAudio();" id="requestAudio">Request Audio-Based Challenge</a>
   </div>
 </div>
 <br>
 <div id="responseDiv"></div>
+<hr><br>
 <script>
   const answerBox = document.getElementById("answerBox");
   const submitButton = document.getElementById("submitButton");
   const responseDiv = document.getElementById("responseDiv");
-  const soundDiv = document.getElementById("soundDiv");
+  const audioDiv = document.getElementById("audioDiv");
   
   submitButton.addEventListener('click', async () => {
-    const response = await fetch('/apps/captcha/validate', {  
+    const response = await fetch('/apps/direct/validate', {  
       method: 'POST',
       body: `captchaAnswer=${answerBox.value}`,
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -40,18 +42,18 @@
   });
   
   // Firefox agressively caches the audio even when the document reloads
-  // We load a random URL under /new_sound/ to trick it into not caching
+  // We load a random URL under /new_audio/ to trick it into not caching
   const randCacheWorkaround = Math.floor(Math.random() * 100);
   // We need to send an mp3 file if the device is iOS based. WAV stream doesn't work! Credit: natclark.com
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   // Why not always send an mp3? -> Conversion is slower and uses more cpu.
   // Congrats! Now you know a weak point in my app!
-  function playSound() {
+  function playAudio() {
     fileExt = '.wav'
     if (isIOS == true) {
       fileExt = '.mp3'
     }
-    soundDiv.innerHTML = `<audio controls="controls"><source src="/apps/captcha/new_sound/${randCacheWorkaround}${fileExt}" type="audio/mp3" /></audio>`
+    audioDiv.innerHTML = `<audio controls="controls"><source src="/apps/direct/new_audio/${randCacheWorkaround}${fileExt}" type="audio/mp3" /></audio>`
   }
 </script>
 </body>

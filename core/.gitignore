@@ -1,0 +1,6 @@
+# Tell Git to ignore everything but .py files
+*
+!*.py
+
+# Also exclude .gitignore
+!.gitignore

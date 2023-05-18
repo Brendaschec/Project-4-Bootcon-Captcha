@@ -1,0 +1,14 @@
+{
+  "formid": {
+    "survey": {
+      "colors": ["Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Black"],
+      "fruits": ["Apple", "Orange", "Mango", "Banana", "Pear", "Blueberry", "Grape", "Blackberry"],
+      "sports": ["Soccer", "Basketball", "Football", "Badminton", "Swimming", "Pickleball"]
+    },
+    "contact": {
+      "email" "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
+    }
+  }
+}
+//// Resources and References
+// https://www.freecodecamp.org/news/how-to-write-regular-expression-in-json-file/

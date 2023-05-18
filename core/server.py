@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
+
 #### Captcha HTTP Server
+
 
 #### Libraries
 import re
@@ -8,53 +10,57 @@ import sys
 import time
 import random
 import threading
-from capimg import CaptchaImage
-from capsnd import CaptchaSound
+from image import CaptchaImage
+from audio import CaptchaAudio
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+
 #### Globals
-# Somewhat Meaningless Version Info
-appVer = "0.1"
+# Version Info
+appVer = "0.4"
 appTitle = "Captcha Server"
 # Modes
 verboseMode = False
 # Network Settings
 hostName = "localhost"
 portNum = 8080
-# Random Character Choice Dataset (Notice there is no zero)
-charChoices = "987654321ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+# Sample Data for Random Choice (Notice there is no zero or letter O!)
+charChoices = "987654321ABCDEFGHIJKLMNPQRSTUVWXYZ123456789"
 # Session Record (Stores challenge answer, cookie info, timestamp, etc)
 sessionRecord = {}
 
-#### Handling HTTP Requests
-# Define a custom class that uses BaseHTTPRequestHandler
-class myServer(BaseHTTPRequestHandler):
-# Overriding methods from the default ones in BaseHTTPRequestHandler.
-  try:
-    def do_GET(self):
-      if self.path == '/new_image': # gen images
-        challenge = newImage(self)
-        self.wfile.write(challenge)
-      elif re.match(r'^/new_sound/(\d+).(wav|mp3)$', self.path): # gen sounds
-        # Why the regex? - We need to match random digits in the URL
-        # Why again?? - Firefox caches the sound file too agressively!
-        # And...? - This workaround forces it to fetch a new URL.
-        # Heres a new problem. Chrome users can spam the server by
-        #   clicking the link many times. We need to alteast hide it!
-        challenge = newSound(self)
-        self.wfile.write(challenge)
-      elif self.path == '/debug': # Test page
-        genericHTTPResponse(self,"This is a test page.")
-      else:
-        self.send_error(404)
-    def do_POST(self):
-      if self.path == '/validate':
-        response = valResponse(self)
-        self.end_headers()
-        self.wfile.write(bytes(response,"utf-8"))
-  except Exception as error:
-    print("Internal Server Error! Check using verbose mode!")
-    vprint(error)
+
+#### Help Page
+def showHelp():
+  print(f"{appTitle} Version {appVer}")
+  print(f"Usage: {sys.argv[0]} [OPTIONS]")
+  print(f"\t-h : Show Help")
+  print(f"\t-v : Enable Verbose Mode")
+  exit(0)
+
+
+#### Verbose Mode Printing
+def vprint(*args, **kwargs):
+  if verboseMode == True:
+    print("[VERBOSE] -- ", end = '')
+    print(*args, **kwargs)
+
+
+#### Generic HTTP Response
+def genericHTTPResponse(self,msg):
+  self.send_response(200)
+  self.send_header("Content-type", "text/html")
+  self.end_headers()
+  self.wfile.write(bytes(msg, "utf-8"))
+
+
+#### Generic HTTP Error
+def genericHTTPError(self,msg):
+  self.send_response(403)
+  self.send_header("Content-type", "text/html")
+  self.end_headers()
+  self.wfile.write(bytes(msg, "utf-8"))
+
 
 #### Generate Image Challenge
 def newImage(self):
@@ -79,18 +85,18 @@ def newImage(self):
       vprint(f"{key}\t{values}")
   return CaptchaImage(randAnswer)
 
-#### Generate Sound Challenge (piggyback off existing img answer)
-def newSound(self):
+
+#### Generate Audio Challenge (that piggybacks off existing img answer)
+def newAudio(self):
   self.send_response(200)
-  fileFmt = 0 # zero means wav, 1 means covert to mp3
+  fileFmt = 0 # zero means wav, 1 means convert to mp3
   if '.mp3' in self.path:
     fileFmt = 1
     self.send_header("Content-type", "audio/mp3")
   else:
     self.send_header("Content-type", "audio/wav")
   self.end_headers()
-  #capSound = bytes('','utf-8')
-  capSound = CaptchaSound("Session Expired!", 0)
+  capAudio = CaptchaAudio("Session Expired!", 0)
   # We need to check the cookies to send same random string as audio
   if 'Cookie' in self.headers and 'captchaID=' in self.headers['Cookie']:
     # This is almost a copy of what was in valResponse
@@ -100,8 +106,8 @@ def newSound(self):
     vprint(f"Client captchaID: {captchaID}")
     if captchaID in sessionRecord:
       challengeAnswer = '...'.join(sessionRecord[captchaID][0])
-      capSound = CaptchaSound(challengeAnswer, fileFmt)
-  return capSound
+      capAudio = CaptchaAudio(challengeAnswer, fileFmt)
+  return capAudio
   
 
 #### Validate Client Response
@@ -122,7 +128,11 @@ def valResponse(self):
       captchaID = captchaID.split('; ')[0]
     vprint(f"Client cookies: {self.headers['Cookie']}")
     vprint(f"Client captchaID: {captchaID}")
-    postBody = self.rfile.read(contentLength).decode() # Is this good?
+    try:
+      postBody = self.rfile.read(contentLength).decode() # Is this good?
+    except:
+      vprint("Error reading POST Body")
+      return "Error reading request.\n"
     vprint(f"POSTed Message Body: {postBody}") # What if client lies???
     if 'captchaAnswer=' in postBody:
       # We only expect an answer and nothing else
@@ -132,28 +142,16 @@ def valResponse(self):
       return "Bad POST Body!\n"
     if captchaID in sessionRecord:
       if userAnswer == sessionRecord[captchaID][0]: # Is answer right?
+        del sessionRecord[captchaID]
         return "Correct!\n"
       else:
+        del sessionRecord[captchaID]
         return "Wrong!\n"
     else:
       return "Invalid Session!\n"
   else:
     return "Improper Headers and/or Cookies!\n"
-  
 
-#### Generic HTTP Response
-def genericHTTPResponse(self,msg):
-  self.send_response(200)
-  self.send_header("Content-type", "text/html")
-  self.end_headers()
-  self.wfile.write(bytes(msg, "utf-8"))
-
-#### Generic HTTP Error
-def genericHTTPError(self,msg):
-  self.send_response(403)
-  self.send_header("Content-type", "text/html")
-  self.end_headers()
-  self.wfile.write(bytes(msg, "utf-8"))
 
 #### Clear Expired Sessions from sessionRecord
 def clrOldSessions():
@@ -164,6 +162,7 @@ def clrOldSessions():
       oldSessions.append(key)
   for key in oldSessions:
     del sessionRecord[key]
+
 
 #### Periodically run clrOldSessions() with threading
 def sessionHouseKeeping(interval):
@@ -176,9 +175,40 @@ def sessionHouseKeeping(interval):
   # Clear Old Items from Session Record
   clrOldSessions()
 
+
+#### Handling HTTP Requests
+# Define a custom class that uses BaseHTTPRequestHandler
+class myServer(BaseHTTPRequestHandler):
+# Overriding methods from the default ones in BaseHTTPRequestHandler.
+  try:
+    def do_GET(self):
+      if self.path == '/new_image': # gen images.. maybe do same as audio?
+        challenge = newImage(self)
+        self.wfile.write(challenge)
+      elif re.match(r'^/new_audio/(\d+).(wav|mp3)$', self.path): # gen audio
+        # Why the regex? - We need to match random digits in the URL
+        # Why again?? - Firefox caches the audio file too agressively!
+        # And...? - This workaround forces it to fetch a new URL.
+        # Heres a new problem. Chrome users can spam the server by
+        #   clicking the link many times. We need to alteast hide it!
+        challenge = newAudio(self)
+        self.wfile.write(challenge)
+      elif self.path == '/debug': # Test page
+        genericHTTPResponse(self,"This is a test page.")
+      else:
+        self.send_error(404)
+    def do_POST(self):
+      if self.path == '/validate':
+        response = valResponse(self)
+        self.end_headers()
+        self.wfile.write(bytes(response,"utf-8"))
+  except Exception as error:
+    print("Internal Server Error! Check using verbose mode!")
+    vprint(error)
+
+
 #### Start Here
 def main():
-  print(f"{appTitle} Version {appVer}")
   # Try to parse arguments
   numArgs = len(sys.argv)
   if numArgs != 1:
@@ -208,18 +238,6 @@ def main():
   httpd.server_close()
   print("Server stopped.")
 
-#### Help Page
-def showHelp():
-  print(f"Usage: {sys.argv[0]} [OPTIONS]")
-  print(f"\t-h : Show Help")
-  print(f"\t-v : Enable Verbose Mode")
-  exit(0)
-
-#### Verbose Mode Printing
-def vprint(*args, **kwargs):
-  if verboseMode == True:
-    print("[VERBOSE] -- ", end = '')
-    print(*args, **kwargs)
 
 #### Run as Standalone App or Module
 if __name__ == '__main__':

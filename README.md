@@ -1,7 +1,5 @@
 ## UPenn Cybersecurity Bootcamp Project 4
 
-Check out our [Scratchpad](scratchpad.md)!
-
 ### Overview:
 
 **Topic**: Web Development - CAPTCHA Challenge Authentication
@@ -11,10 +9,12 @@ Check out our [Scratchpad](scratchpad.md)!
 **End Goal**: Implement a server-side, visual and audio based, CAPTCHA system for web applications to deter bot activity.
 
 **List of Technologies to reach the Goal:**
- - Fedora/Ubuntu Linux VM
+ - Linux VM
+ - Docker/Podman
  - NGINX
  - Python
  - MariaDB
+ - PHP
  - HTML and CSS
  - JavaScript
  - ImageMagick
@@ -22,13 +22,13 @@ Check out our [Scratchpad](scratchpad.md)!
  - ffmpeg (ffmpeg-free)
  - cURL
  - Web Browser
- - Git/GitHub
+ - Git
+ - Geany/VSCode/Codium/Vim IDE
 
 **The goal will be reached in the following way:**
-The Linux VM hosts the NGINX HTTP server to serve static HTML/CSS/JS content for the frontend of the app and the proxy forwards certain requests to a Python backend for handling CAPTCHAs. The backend generates visual and auditory CAPTCHA challenges for GET requests and validates user input for POST requests. ImageMagick and espeak are the libraries and utilities used to generate the challenges. Cookies are used to track a user's CAPTCHA session and the associated answer to the challenge (in RAM). MariaDB will store longer term session cookie information, post-challenge. cURL and Firefox are used for testing/debugging, while GitHub manages version control.
-
+The Linux VM hosts a Container running the NGINX HTTP server to serve static HTML/CSS/JS content for the frontend of the app. PHP scripts using the cURL library proxy certain requests between the Python backend for handling CAPTCHAs. The backend generates visual and auditory CAPTCHA challenges for GET requests and validates user input for POST requests. ImageMagick and espeak are the libraries and utilities used to generate the challenges. Cookies are used to track a user's CAPTCHA session and the associated answer to the challenge (in RAM). MariaDB stores supplementary data for demonstrating a hypothetical survey web application that uses CAPTCHA verification. The cURL utility and Firefox are used for testing/debugging, while GitHub manages version control.
 
 ### To Do:
- - Get sound option working
- - Create realistic demo like a survey, poll, username/password form to protect
- - Stability testing
+ - Flesh out contact us and login form
+ - Deploy to VPS for testing
+

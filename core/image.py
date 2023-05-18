@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
+
 #### Captcha Image Generator
+
 
 #### Libraries
 import sys
@@ -9,66 +11,28 @@ from wand.color import Color
 from wand.image import Image
 from wand.drawing import Drawing
 
+
 #### Globals
-# Somewhat Meaningless Version Info
-appVer = "0.1"
+# Version Info
+appVer = "0.4"
 appTitle = "Captcha Image Generator"
 # Modes
 verboseMode = False
 
-#### Start Here
-def main():
-  print(f"{appTitle} Version {appVer}")
-  # Defaults that really need to be overridden
-  capString = None
-  outFile = "temp.png"
-  # Try to parse arguments
-  numArgs = len(sys.argv)
-  if numArgs != 1:
-    try:
-      i = 1
-      while i < numArgs:
-        if sys.argv[i][0] == '-':
-          if sys.argv[i][1] == 'v': # Enable verbose mode
-            global verboseMode
-            verboseMode = True
-          elif sys.argv[i][1] == 'h': # Show Help Page
-            showHelp()
-          elif sys.argv[i][1] == 's': # Get string for captcha
-            i = i + 1
-            capString = sys.argv[i]
-          elif sys.argv[i][1] == 'f': # Get file name
-            i = i + 1
-            outFile = sys.argv[i]
-          elif sys.argv[i][1] == 't': # Test arg prints string
-            i = i + 1
-            print(sys.argv[i])
-        i = i + 1
-    except Exception as error:
-      print(f"Error parsing arguments! Pass \'-h\' for help.\nExiting.")
-      vprint(error)
-  else:
-    showHelp()
-  if capString is not None:
-    vprint(f"You want to use the string: {capString}")
-    vprint(f"You want to save to: {outFile}")
-    capImage = CaptchaImage(capString)
-    newFile = open(outFile, "wb")
-    newFile.write(capImage)
-    newFile.close()
-  else:
-    print('File Error')
 
 #### Help Page
 def showHelp():
+  print(f"{appTitle} Version {appVer}")
   print(f"Usage: {sys.argv[0]} -s <YOURSTRING> -f <OUTPUTFILE>")
   exit(0)
+
 
 #### Verbose Mode Printing
 def vprint(*args, **kwargs):
   if verboseMode == True:
     print("[VERBOSE] -- ", end = '')
     print(*args, **kwargs)
+
 
 #### Generate an Image with Distorted Text
 def CaptchaImage(capString):
@@ -115,6 +79,52 @@ def CaptchaImage(capString):
   drawTool(imgCanvas);
   
   return imgCanvas.make_blob();
+
+
+#### Standalone Starts Here
+def main():
+  # Defaults to Override
+  capString = None
+  outFile = "temp.png"
+  # Parse arguments
+  numArgs = len(sys.argv)
+  if numArgs != 1:
+    try:
+      i = 1
+      while i < numArgs:
+        if sys.argv[i][0] == '-':
+          if sys.argv[i][1] == 'v': # Enable verbose mode
+            global verboseMode
+            verboseMode = True
+          elif sys.argv[i][1] == 'h': # Show Help Page
+            showHelp()
+          elif sys.argv[i][1] == 's': # String for captcha
+            i = i + 1
+            capString = sys.argv[i]
+          elif sys.argv[i][1] == 'f': # File name
+            i = i + 1
+            outFile = sys.argv[i]
+          elif sys.argv[i][1] == 't': # Test Argument/Flag
+            i = i + 1
+            print(sys.argv[i])
+        i = i + 1
+    except Exception as error:
+      print(f"Error parsing arguments! Pass \'-h\' for help.\nExiting.")
+      vprint(error)
+      exit(2)
+  else:
+    showHelp()
+  if capString is not None:
+    vprint(f"You want to use the string: {capString}")
+    vprint(f"You want to save to: {outFile}")
+    capImage = CaptchaImage(capString)
+    newFile = open(outFile, "wb")
+    newFile.write(capImage)
+    newFile.close()
+  else:
+    print('File Error')
+    exit(2)
+
 
 #### Run as Standalone App or Module
 if __name__ == '__main__':

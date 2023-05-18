@@ -1,20 +1,28 @@
 #!/bin/bash
 
+
 #### Captcha Project
 # init program for demo container
 
-# Oneshot Services
-/setup
 
-# Background Services
+#### Oneshot Services
+# < none >
+
+
+#### Background Services
 services=(
+  '/usr/bin/mariadbd-safe --user=root --bind-address=127.0.0.1 --init-file=/etc/mariadb-init'
+  '/usr/sbin/php-fpm --nodaemonize'
   '/usr/sbin/nginx -g "daemon off;"'
-  '/gitrepo/apps/captcha/capsvr.py'
+  '/captcha/server.py -v'
 )
 
+
+#### PID List
 pids=()
 
-# Start services and record pids
+
+#### Start Services and Record PIDs
 function startup {
   echo "[ % ] - Starting Up!"
   for service in "${services[@]}"; do
@@ -24,7 +32,8 @@ function startup {
   done
 }
 
-# Stop the pids you started
+
+#### Stop the Recorded PIDs
 function shutdown {
   echo "[ % ] - Shutting Down!"
   for pid in "${pids[@]}"; do
@@ -34,10 +43,15 @@ function shutdown {
   exit 0
 }
 
-# Run shutdown function when container stops or when receiving SIGINT (Ctrl+C)
+
+#### Signal Handling
+# Run shutdown function when container stops or SIGINT (Ctrl+C)
 trap shutdown SIGTERM SIGINT
 
+
+#### Get Going!
 startup
 
-# Wait until signaled
+
+#### Wait Until Signaled
 wait

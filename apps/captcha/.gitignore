@@ -1,6 +1,0 @@
-# ignore everything except .py files
-*
-!*.py
-
-# exclude .gitignore
-!.gitignore
