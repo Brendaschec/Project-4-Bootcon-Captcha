@@ -1,101 +1,86 @@
-<div id="output"></div>
+<!DOCTYPE html>
+<html>
+<body>
+<h1><i>Survey Results</i></h1>
+<p>Enjoy the pretty visuals!</p>
+<hr><br>
+<h2>Color Chart</h2>
 <div id="colorsChart"></div>
+<h2>Sports Chart</h2>
 <div id="sportsChart"></div>
-<script src='https://cdn.plot.ly/plotly-2.20.0.min.js'></script>
+<h2>Fruits Chart</h2>
+<div id="fruitsChart"></div>
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
 <script>
-  const favoriteForm = document.getElementById("favoriteForm");
-  const favoriteColor = document.getElementById("favoriteColor");
-  const favoriteSport = document.getElementById("favoriteSport");
-  const capchaSolution = document.getElementById("capchaSolution");
-  const output = document.getElementById("output");
   const colorsChart = document.getElementById("colorsChart");
   const sportsChart = document.getElementById("sportsChart");
-  
-  favoriteForm.addEventListener("submit", handleSubmit);
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const favoriteColorValue = favoriteColor.value;
-    const favoriteSportValue = favoriteSport.value;
-    const capchaSolutionValue = capchaSolution.value;
-    const data = await sendRequest(favoriteColorValue, favoriteSportValue, capchaSolutionValue)
-    if (!data.success) {
-      output.textContent = "Wrong capcha!";
-      return;
-    }
-    buildGraph(data);
-  }
-  async function sendRequest(favoriteColorValue, favoriteSportValue, capchaSolutionValue) {
-    // const response = await fetch("/apps/captcha/favorites", {
-    //   method: "POST",
-    //   body: `captchaAnswer=${capchaSolutionValue}&color=${favoriteColorValue}&sport=${favoriteSportValue}`,
-    //   headers: {
-    //     "Content-Type": "application/x-www-form-urlencoded"
-    //   }
-    // })
-    // const responseData = await response.json();
-    // return responseData;
-    // return {
-    //   success: false,
-    // }
-    return {
-      success: true,
-      colors: [{
-          name: "Blue",
-          count: 4
-        },
-        {
-          name: "Red",
-          count: 1
-        },
-        {
-          name: "Yellow",
-          count: 7
-        },
-        {
-          name: "Green",
-          count: 5
-        },
-        {
-          name: "Orange",
-          count: 4
-        },
-        {
-          name: "Purple",
-          count: 2
-        },
-      ],
-      sports: [{
-          name: "Soccer",
-          count: 2
-        },
-        {
-          name: "Basketball",
-          count: 3
-        },
-        {
-          name: "Football",
-          count: 4
-        },
-        {
-          name: "Badminton",
-          count: 1
-        },
-        {
-          name: "Swimming",
-          count: 6
-        },
-        {
-          name: "Pickleball",
-          count: 3
-        },
-      ]
-    }
-  }
+  const fruitsChart = document.getElementById("fruitsChart");
 
-  function buildGraph(data) {
-    const colors = data.colors;
-    const sports = data.sports;
+  <?php
+    // Connection parameters
+    $servername = 'localhost';
+    $username = 'root';
+    $password = 'testpass100';
+    $dbname = 'captchaDemo';
     
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    
+    // Check connection
+    if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+    }
+    
+    $sql = "SELECT favoriteColor, COUNT(*) as count FROM surveyResults GROUP BY favoriteColor";
+    $result = $conn->query($sql);
+
+    $colors = array();
+    if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+        array_push($colors, ["name" => $row["favoriteColor"], "count" => $row["count"]]);
+      }
+    } 
+
+    echo 'const colors = ' . json_encode($colors) . ';';
+    
+    $sql = "SELECT favoriteSport, COUNT(*) as count FROM surveyResults GROUP BY favoriteSport";
+    $result = $conn->query($sql);
+
+    $sports = array();
+    if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+        array_push($sports, ["name" => $row["favoriteSport"], "count" => $row["count"]]);
+      }
+    } 
+
+    echo 'const sports = ' . json_encode($sports) . ';';
+    
+    $sql = "SELECT favoriteFruit, COUNT(*) as count FROM surveyResults GROUP BY favoriteFruit";
+    $result = $conn->query($sql);
+
+    $fruits = array();
+    if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+        array_push($fruits, ["name" => $row["favoriteFruit"], "count" => $row["count"]]);
+      }
+    } 
+
+    echo 'const fruit = ' . json_encode($fruits) . ';';
+    
+    // Close connection
+    $conn->close();
+  ?>
+
+  function buildGraph() {
+    var opts = {displayModeBar: false, responsive: true};
+    var layout = {
+      autosize: true,
+      font: {
+        family: 'sans-serif',
+        size: 18,
+        color: '#000'
+      }
+    };
     var colorData = [{
       x: colors.map(function(color) {
         return color.name;
@@ -104,9 +89,12 @@
         return color.count;
       }),
       name: "Colors",
-      type: 'bar'
+      type: 'bar',
+      marker: {
+        color: 'navy',
+      }
     }];
-    Plotly.newPlot('colorsChart', colorData);
+    Plotly.newPlot('colorsChart', colorData, layout, opts);
     
     var sportData = [{
       x: sports.map(function(sport) {
@@ -116,8 +104,32 @@
         return sport.count;
       }),
       name: "Sports",
-      type: 'bar'
+      type: 'bar',
+      marker: {
+        color: 'navy',
+      }
     }]
-    Plotly.newPlot("sportsChart", sportData);
+    Plotly.newPlot("sportsChart", sportData, layout, opts);
+    
+    var fruitData = [{
+      x: fruit.map(function(fruit) {
+        return fruit.name;
+      }),
+      y: fruit.map(function(fruit) {
+        return fruit.count;
+      }),
+      name: "Fruits",
+      type: 'bar',
+      marker: {
+        color: 'navy',
+      }
+    }]
+    Plotly.newPlot("fruitsChart", fruitData, layout, opts);
   }
+  
+  buildGraph();
+  // https://plotly.com/javascript/font/
 </script>
+<br><hr>
+</body>
+</html>
