@@ -57,6 +57,8 @@
   function finishAction() {
     global $validQuery;
     
+    include $_SERVER['DOCUMENT_ROOT'] . '/head.html';
+    
     // Connection parameters
     $servername = 'localhost';
     $username = 'root';
@@ -77,7 +79,9 @@
       case 'survey':
         $sql = "INSERT INTO surveyResults VALUES ('{$validQuery['favoriteColor']}', '{$validQuery['favoriteSport']}', '{$validQuery['favoriteFruit']}', NOW())";
         if ($conn->query($sql) === TRUE) {
+          echo "<div class=\"bannerBox2\">";
           echo "Thank you for participating in our survey!\n<br>\n";
+          echo "</div><br>";
           echo "Your response has been recorded.\n<br>\n";
           echo "View the results <a href=\"/results.php\">here</a>";
         } else {
@@ -111,7 +115,7 @@
  
     // Prepare the POST data
     $postData = array(
-      'captchaAnswer' => sanitizeInput($_POST['captchaAnswer'])
+      'captchaAnswer' => strtoupper(sanitizeInput($_POST['captchaAnswer']))
     );
     
     // Retrieve the cookies from the user's browser ($_COOKIE)
@@ -142,13 +146,15 @@
     if ($response == "Correct!\n") {
       finishAction();
     } elseif ($response == "Wrong!\n")  {
-      echo "Wrong. Try again!\n<br>";
+      echo "<div class=\"bannerBox1\">Wrong. Try again!</div>";
       include $_SERVER['DOCUMENT_ROOT'] . '/_/captcha.php';
     } else {
+      echo "<div class=\"bannerBox1\">";
       echo "Session/Body Error:\n<br>";
+      echo "</div><br>";
       echo "Your session is invalid.\n<br>";
       echo "Make sure you complete the CAPTCHA in time.\n<br>";
-      echo "Try Again.\n<br>";
+      echo "Try Again.\n<hr>";
       include $_SERVER['DOCUMENT_ROOT'] . '/_/captcha.php';
     }
   }

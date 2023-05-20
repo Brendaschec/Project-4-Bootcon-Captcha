@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/head.html';?>
 <body>
+<div style="float: right;"><a href="/" class="bannerBox3">Go Home</a></div>
 <h1><i>Survey Results</i></h1>
 <p>Enjoy the pretty visuals!</p>
 <hr><br>

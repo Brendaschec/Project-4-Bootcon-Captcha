@@ -16,6 +16,9 @@ rm -r /usr/share/nginx/html/*
 
 # Add custom configuration file
 tee -a /etc/nginx/default.d/nxdefs.conf > /dev/null <<EOF
+location / {
+  ssi on;
+}
 location /apps/direct {
   proxy_pass http://127.0.0.1:8080/;
 }
