@@ -7,11 +7,11 @@
 <p>Enjoy the pretty visuals!</p>
 <hr><br>
 <h2>Color Chart</h2>
-<div id="colorsChart"></div>
+<div id="colorsChart" class="graphBox"></div>
 <h2>Sports Chart</h2>
-<div id="sportsChart"></div>
+<div id="sportsChart" class="graphBox"></div>
 <h2>Fruits Chart</h2>
-<div id="fruitsChart"></div>
+<div id="fruitsChart" class="graphBox"></div>
 <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
 <script>
   const colorsChart = document.getElementById("colorsChart");
@@ -74,9 +74,8 @@
   ?>
 
   function buildGraph() {
-    var opts = {displayModeBar: false, responsive: true};
+    var opts = {displayModeBar: false, responsive: true, staticPlot: true};
     var layout = {
-      autosize: true,
       font: {
         family: 'sans-serif',
         size: 18,
