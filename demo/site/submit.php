@@ -51,6 +51,8 @@
       default:
         exit("Invalid Form ID!");
     }
+  } else {
+    exit("Form ID is required!");
   }
 
   //// Update DB with Form Data
