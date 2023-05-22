@@ -43,7 +43,7 @@
       }
     } 
 
-    echo 'const colors = ' . json_encode($colors) . ';';
+    echo 'const colors = ' . json_encode($colors) . ';' . "\n  ";
     
     $sql = "SELECT favoriteSport, COUNT(*) as count FROM surveyResults GROUP BY favoriteSport";
     $result = $conn->query($sql);
@@ -55,7 +55,7 @@
       }
     } 
 
-    echo 'const sports = ' . json_encode($sports) . ';';
+    echo 'const sports = ' . json_encode($sports) . ';' . "\n  ";
     
     $sql = "SELECT favoriteFruit, COUNT(*) as count FROM surveyResults GROUP BY favoriteFruit";
     $result = $conn->query($sql);
@@ -67,7 +67,7 @@
       }
     } 
 
-    echo 'const fruit = ' . json_encode($fruits) . ';';
+    echo 'const fruits = ' . json_encode($fruits) . ';' . "\n";
     
     // Close connection
     $conn->close();
@@ -113,10 +113,10 @@
     Plotly.newPlot("sportsChart", sportData, layout, opts);
     
     var fruitData = [{
-      x: fruit.map(function(fruit) {
+      x: fruits.map(function(fruit) {
         return fruit.name;
       }),
-      y: fruit.map(function(fruit) {
+      y: fruits.map(function(fruit) {
         return fruit.count;
       }),
       name: "Fruits",
