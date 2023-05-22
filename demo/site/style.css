@@ -1,0 +1,24 @@
+.bannerBox1 {
+  background-color: #B9002B;
+  color: #FFFFFF;
+  padding: 6px;
+  font-size: 20px;
+}
+
+.bannerBox2 {
+  background-color: #00B942;
+  color: #FFFFFF;
+  padding: 6px;
+  font-size: 20px;
+}
+
+.bannerBox3 {
+  background-color: #1000B9;
+  color: #FFFFFF;
+  padding: 6px;
+  font-size: 20px;
+}
+
+.graphBox {
+  min-width: 450px;
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/head.html';?>
 <body>
 <h1><i>Are you a robot?</i></h1>
 <p>Complete the verification challenge!</p>
@@ -60,7 +61,7 @@
 <br><br>
 <label>Type the text you recognize:</label>
 <br><br>
-<input autocomplete="false" type="text" name="captchaAnswer">
+<input autocomplete="false" type="text" style="text-transform: uppercase;" name="captchaAnswer">
 <input type="submit" value="Submit">
 </form>
 <br>
