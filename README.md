@@ -27,8 +27,3 @@
 
 **The goal will be reached in the following way:**
 The Linux VM hosts a Container running the NGINX HTTP server to serve static HTML/CSS/JS content for the frontend of the app. PHP scripts using the cURL library proxy certain requests between the Python backend for handling CAPTCHAs. The backend generates visual and auditory CAPTCHA challenges for GET requests and validates user input for POST requests. ImageMagick and espeak are the libraries and utilities used to generate the challenges. Cookies are used to track a user's CAPTCHA session and the associated answer to the challenge (in RAM). MariaDB stores supplementary data for demonstrating a hypothetical survey web application that uses CAPTCHA verification. The cURL utility and Firefox are used for testing/debugging, while GitHub manages version control.
-
-### To Do:
- - Flesh out contact us and login form
- - Deploy to VPS for testing
-
